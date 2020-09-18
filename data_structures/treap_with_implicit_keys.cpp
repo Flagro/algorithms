@@ -3,29 +3,26 @@
 
 using namespace std;
 
-class treap // Декартово дерево по неявному ключу
+class treap
 {
 private:
     struct node
     {
-        int key; // Значение узла дерева
-        int prior; // Рандомизированный приоритет узла дерева
-        int size; // Размер дерева
-        int max_value; // Максимальное значение на поддереве
-        int min_value; // Минимальное значение на поддереве
-        int sum; // Сумма элементов на поддереве
-        int add; // "Добавка" к элементам поддерева для групповой операции добавления на отрезке
-        bool reversed; // Признак перевернутости элементов поддерева
-        node* child_left; // Указатель на левого потомка
-        node* child_right; // Указатель на правого потомка
-        /* Пустой конструктор */
+        int key;
+        int prior;
+        int size;
+        int max_value;
+        int min_value;
+        int sum;
+        int add;
+        bool reversed;
+        node* child_left;
+        node* child_right;
         node(): key(0), prior(rand()), size(0), max_value(-2e9), min_value(2e9), sum(0), add(0), reversed(false), child_left(nullptr), child_right(nullptr) {}
-        /* Конструктор с инициализацией значения узла дерева */
         node(int key__): key(key__), prior(rand()), size(1), max_value(key__), min_value(key__), sum(key__), add(0), reversed(false), child_left(nullptr), child_right(nullptr) {}
     };
-    typedef node* ptr_node_type; // Переопределение ссылочного типа для структуры узла
-    ptr_node_type treap_root = nullptr; // Корень декартового дерева
-    /* Безопасное извлечение размера дерева */
+    typedef node* ptr_node_type;
+    ptr_node_type treap_root = nullptr;
     int get_size(ptr_node_type root)
     {
         if (root == nullptr)
@@ -33,7 +30,6 @@ private:
         else
             return root->size;
     }
-    /* Безопасное извлечение максимального элемента дерева */
     int get_max(ptr_node_type root)
     {
         if (root == nullptr)
@@ -41,7 +37,6 @@ private:
         else
             return root->max_value + root->add;
     }
-    /* Безопасное извлечение минимального элемента дерева */
     int get_min(ptr_node_type root)
     {
         if (root == nullptr)
@@ -49,7 +44,6 @@ private:
         else
             return root->min_value + root->add;
     }
-    /* Безопасное извлечение суммы элементов дерева */
     long long get_sum(ptr_node_type root)
     {
         if (root == nullptr)
@@ -57,31 +51,26 @@ private:
         else
             return root->sum + root->add;
     }
-    /* Обновление размера дерева */
     void update(ptr_node_type &root)
     {
         if (root != nullptr)
             root->size = 1 + get_size(root->child_left) + get_size(root->child_right);
     }
-    /* Обновление значения максимального элемента дерева */
     void update_max(ptr_node_type &root)
     {
         if (root != nullptr)
             root->max_value = max(max(get_max(root->child_left), get_max(root->child_right)), root->key + root->add);
     }
-    /* Обновление значения минимального элемента дерева */
     void update_min(ptr_node_type &root)
     {
         if (root != nullptr)
             root->min_value = min(min(get_min(root->child_left), get_min(root->child_right)), root->key + root->add);
     }
-    /* Обновление значения суммы элементов дерева */
     void update_sum(ptr_node_type &root)
     {
         if (root != nullptr)
             root->sum = get_sum(root->child_left) + get_sum(root->child_right) + root->key + root->add;
     }
-    /* "Полное" обновление узла дерева */
     void full_update(ptr_node_type &root)
     {
         if (root != nullptr)
@@ -92,7 +81,6 @@ private:
             update_sum(root);
         }
     }
-    /* "Проталкивание" значения добавки узла дерева к его потомкам для реализации функции слияния и разделения дерева */
     void push_add(ptr_node_type &root)
     {
         if (root != nullptr)
@@ -105,7 +93,6 @@ private:
             root->add = 0;
         }
     }
-    /* "Проталкивание" признака переворота узла дерева к его потомкам для реализации функции слияния и разделения дерева */
     void push_reversed(ptr_node_type &root)
     {
         if (root != nullptr)
@@ -119,7 +106,6 @@ private:
             root->reversed = false;
         }
     }
-    /* Функция разделения дерева root на два поддерева left и right таким образом, что в дереве left ровно k элементов */
     void split(ptr_node_type root, ptr_node_type &left, ptr_node_type &right, int k)
     {
         push_add(root);
@@ -142,7 +128,6 @@ private:
             full_update(left);
         }
     }
-    /* Функция слияния поддеревьев left и right в дерево root */
     void merge(ptr_node_type &root, ptr_node_type left, ptr_node_type right)
     {
         if (left == nullptr)
